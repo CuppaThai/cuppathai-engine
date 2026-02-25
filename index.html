@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CuppaThai – Scene 01</title>
+
+<style>
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background:#111;
+  color:#fff;
+  text-align:center;
+  padding:40px;
+}
+
+.card {
+  max-width:600px;
+  margin:auto;
+  background:#1e1e1e;
+  padding:30px;
+  border-radius:12px;
+}
+
+.thai {
+  font-size:28px;
+  margin:20px 0;
+}
+
+.roman {
+  color:#bbb;
+  margin-bottom:20px;
+}
+
+button {
+  padding:10px 20px;
+  margin:8px;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.play { background:#00c853; color:white; }
+.record { background:#2962ff; color:white; }
+.stop { background:#d50000; color:white; }
+
+.status {
+  margin-top:20px;
+  font-size:14px;
+  color:#aaa;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Scene 01 – Greeting</h1>
+
+  <div class="thai">สวัสดีครับ</div>
+  <div class="roman">sawasdee krap</div>
+  <div>Hello</div>
+
+  <button class="play" onclick="playAudio()">Play</button>
+  <button class="record" onclick="startRecording()">Record</button>
+  <button class="stop" onclick="stopRecording()">Stop</button>
+
+  <div class="status" id="status">Idle</div>
+</div>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+
+function playAudio() {
+  const audio = new Audio("https://upload.wikimedia.org/wikipedia/commons/3/3c/Hello.ogg");
+  audio.play();
+}
+
+async function startRecording() {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+
+  mediaRecorder.start();
+  document.getElementById("status").innerText = "Recording...";
+
+  mediaRecorder.ondataavailable = event => {
+    audioChunks.push(event.data);
+  };
+
+  mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(audioChunks);
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    audio.play();
+    document.getElementById("status").innerText = "Playback your recording";
+  };
+}
+
+function stopRecording() {
+  mediaRecorder.stop();
+}
+</script>
+
+</body>
+</html>
